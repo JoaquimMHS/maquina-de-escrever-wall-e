@@ -16,6 +16,7 @@ color cinzaMao = #A2A6B2;
 color cinzaMedio = #4d4e50;
 color cinzaEscuro = #272827;
 
+
 void setup() {
   size(800, 800); // Tela um pouco maior para os detalhes
 
@@ -31,6 +32,8 @@ void draw() {
   // --- Desenha a partir do centro da tela ---
   translate(width/2, height/2 + 50); // Move a origem (0,0) para o centro
   strokeCap(ROUND); // Deixa as pontas das linhas arredondadas
+
+  translate(0, -80);
 
   // Rolo da Máquina e Papel (Mais ao fundo)
   desenhaPapel();
@@ -140,38 +143,42 @@ void desenhaCabeca() {
 
   // Pescoço
   fill(cinza2);
-  rect(0, -150, 25, 70, 0); // Base do pescoço
-  rect(0, -90, 35, 35, 0); // Base do pescoço
+  rect(0, -105, 25, 70, 0); // Base do pescoço
+  //rect(0, -90, 35, 35, 0); // Base do pescoço
   rect(0, -45, 40, 25, 0); // Base do pescoço
   rect(0, -60, 25, 10, 0); // Base do pescoço
 
-  //Antena direita
-  noFill();
-  strokeWeight(5);
-  stroke(cinza2);
-  bezier(-119, -257, -111, -276, -122, -268, -28, -292);
-  ellipse(-119, -257, 10, 10);
-  // Antena direita
-  bezier(119, -257, 111, -276, 122, -268, 28, -292);
-  ellipse(119, -257, 10, 10);
 
   // --- Olhos (Binóculos) ---
   // A função desenha os dois olhos
   strokeWeight(4);
   stroke(yellowWallE);
   fill(cinza2);
-  rect(-65, -200, 120, 95, 40, 0, 40, 25); // Caixa principal
-  rect(65, -200, 123, 95, 0, 40, 25, 40); // Caixa principal
-  DesenhaOlho(-60, -200); // Olho Esquerdo
-  DesenhaOlho(60, -200); // Olho Direito
+  rect(-65, -150, 120, 95, 40, 0, 40, 25); // Caixa principal
+  rect(65, -150, 123, 95, 0, 40, 25, 40); // Caixa principal
+  DesenhaOlho(-60, -150, true); // Olho Esquerdo
+  DesenhaOlho(60, -150, false); // Olho Direito
 
   popMatrix(); // Retorna ao centro
 }
 
 
-void DesenhaOlho(float x, float y) {
+void DesenhaOlho(float x, float y, boolean antena) {
   pushMatrix();
   translate(x, y);
+
+  noFill();
+  strokeWeight(5);
+  stroke(cinza2);
+  if (antena) {
+    //Antena direita
+    bezier(-119, -257, -111, -276, -122, -268, -28, -292);
+    ellipse(-119, -257, 10, 10);
+  } else {
+    // Antena direita
+    bezier(119, -257, 111, -276, 122, -268, 28, -292);
+    ellipse(119, -257, 10, 10);
+  }
 
   // Lente (Aro)
   stroke(117, 117, 117);
@@ -196,44 +203,47 @@ void DesenhaOlho(float x, float y) {
 void desenhaPapel() {
   pushMatrix();
 
-   //--- Papel ---
+  //--- Papel ---
   stroke(cinzaEscuro);
   strokeWeight(2);
   fill(255);
-  rect(0, -40, 245, 200, 5); // O papel
-
-  
+  rect(0, -196, 245, 200, 5); // O papel
 
   // Detalhe Maquina Direita
   noStroke();
   fill(cinzaMedio);
   rect(130, -49, 25, 35);
   rect(145, -48, 10, 15);
-  
+
   fill(cinza2);
   rect(155, -50, 15, 50);
   rect(150, -70, 15, 10);
   rect(165, -50, 9, 25);
-  
+
   fill(cinzaMedio);
   rect(178, -50, 20, 40, 5);
-  
+
   // Detalhe Maquina Esquerda
   fill(cinzaMedio);
   rect(-130, -49, -25, 35);
   rect(-145, -48, -10, 15);
-  
+
   fill(cinza2);
   rect(-155, -50, -15, 50);
   rect(-150, -70, -15, 10);
   rect(-172, -50, 20, 26);
-  
+
   rect(-172, -63, 18, 0, 0, 0, 0, -30);
-  
+
   rect(-190, -58, 20, 10, 0, 0, 0, 0);
-  
+
   rect(-214, -60, 35, 35, 5);
-  
+
+  // --- Rolo (Platen) ---
+  strokeWeight(4);
+  stroke(cinzaEscuro);
+  fill(grayKnob);
+  rect(0, -110, 308, 47, 10); // Rolo central
 
   popMatrix();
 }
@@ -241,6 +251,7 @@ void desenhaPapel() {
 
 void desenhaTeclado() {
   pushMatrix();
+  
 
   popMatrix();
 }
