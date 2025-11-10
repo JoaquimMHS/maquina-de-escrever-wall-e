@@ -1,5 +1,9 @@
 // Wall-E Máquina de Escrever - Versão 2D Detalhada
 // Projeto de Fundamentos de Computação Gráfica
+import ddf.minim.*;
+Minim minim;
+AudioPlayer somTecla;
+
 
 // --- Paleta de Cores ---
 color amarelo = #ffc800;        // Amarelo Wall-E
@@ -12,12 +16,18 @@ color cinzaClaro = #DCDCDC;     // Teclas do teclado
 color cinzaMedio = #4d4e50;     // Esteiras, rolo da maquina, 
 color cinzaEscuro = #272827;    //
 
+boolean botaoOnLigado = false;
+boolean botaoDigLigado = false;
+boolean botaoTextLigado = false;
 
 void setup() {
   size(800, 800);
 
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
+  
+  minim = new Minim(this);
+  somTecla = minim.loadFile("ligando_wallE.mp3");
 }
 
 void draw() {
@@ -71,6 +81,15 @@ void desenhaCorpo() {
   fill(cinzaEscuro);
   ellipse(40, 140, 10, 10);
 
+  desenhaLedsON();
+  //desenhaLedsOFF();
+  desenhaAltoFalante();
+
+  popMatrix(); 
+}
+
+void desenhaLedsON() {
+  pushMatrix();
   // Medidor de carga (LEDs)
   noStroke();
   fill(cinzaEscuro);
@@ -83,9 +102,23 @@ void desenhaCorpo() {
   rect(30, 15, 25, 5, 2);
   fill(#908010); // Led 4
   rect(30, 25, 25, 5, 2);
+  popMatrix(); 
+}
 
-  desenhaAltoFalante();
-
+void desenhaLedsOFF() {
+  pushMatrix();
+  // Medidor de carga (LEDs)
+  noStroke();
+  fill(cinzaEscuro);
+  rect(30, 10, 50, 55, 0);
+  fill(vermelho); // Led 1
+  rect(30, -5, 25, 5, 2);
+  fill(vermelho); // Led 2
+  rect(30, 5, 25, 5, 2);
+  fill(vermelho); // Led 3
+  rect(30, 15, 25, 5, 2);
+  fill(vermelho); // Led 4
+  rect(30, 25, 25, 5, 2);
   popMatrix(); 
 }
 
@@ -123,14 +156,17 @@ void desenhaCabeca() {
   rect(-75, -150, 135, 100, 40, 0, 40, 25); // Binóculos esquerda
   rect(75, -150, 135, 100, 0, 40, 25, 40); // Binóculos direita
   
-  DesenhaOlho(-60, -150, true); // Olho Esquerdo
-  DesenhaOlho(60, -150, false); // Olho Direito
+  desenhaOlho(-60, -150, true); // Olho Esquerdo
+  desenhaOlho(60, -150, false); // Olho Direito
+  
+  //desenhaOlhoFechado(-60, -150, true);
+  //desenhaOlhoFechado(60, -150, false);
 
   popMatrix();
 }
 
 
-void DesenhaOlho(float x, float y, boolean antena) {
+void desenhaOlho(float x, float y, boolean antena) {
   pushMatrix();
   translate(x, y);
 
@@ -166,6 +202,30 @@ void DesenhaOlho(float x, float y, boolean antena) {
   popMatrix();
 }
 
+void desenhaOlhoFechado(float x, float y, boolean antena) {
+  pushMatrix();
+  translate(x, y);
+
+  noFill();
+  strokeWeight(5);
+  stroke(cinza2);
+  if (antena) {
+    //Antena esquerda
+    bezier(-95, -40, -86, -71, -85, -65, 0, -81);
+    ellipse(-95, -40, 10, 10);
+  } else {
+    // Antena direita
+    bezier(95, -40, 86, -71, 85, -65, 0, -81);
+    ellipse(95, -40, 10, 10);
+  }
+
+  // Lente (Aro)
+  strokeWeight(0);
+  fill(cinzaEscuro);
+  rect(0,0,71,6,5);
+  
+  popMatrix();
+}
 
 void desenhaPapel() {
   pushMatrix();
@@ -275,19 +335,73 @@ void desenhaTeclado() {
   endShape(CLOSE);
   
   // Botões
+  desenhaBotoes();
+  
+  popMatrix();
+}
+
+void desenhaBotoes(){
+  pushMatrix();
   noStroke(); 
-  fill(cinzaClaro);
-  ellipse(-86, 5, 42, 23);
-  fill(cinzaClaro); 
-  ellipse(0, 5, 42, 23);
-  fill(cinzaClaro); 
-  ellipse(86, 5, 42, 23);
+  
+  textSize(15);
+  String[] linha1 = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
+  String[] linha2 = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"};
+  
+  float diametroTecla = 25; 
+  float y_linha1 = -50;   
+  float y_linha2 = -20;     
+  float x_inicio = -135;    
+  float x_fim = 135;        
+  
+  
+  desenhaLinhaTeclas(linha1, y_linha1, x_inicio, x_fim, diametroTecla);
+  desenhaLinhaTeclas(linha2, y_linha2, x_inicio, x_fim, diametroTecla);
+    
+  
   textSize(15);
   fill(0);
   textAlign(CENTER, CENTER); // Centraliza o texto
-  text("ON", -86, 5);
-  text("DIG", 0, 5);
-  text("TEXT", 87, 5);
+  
+  if(!botaoOnLigado){
+    fill(cinzaClaro);
+    ellipse(-86, 5, 42, 23);
+    fill(0);
+    text("OFF", -86, 5);
+  }else{
+    fill(0,255,0);
+    ellipse(-86, 5, 42, 23);
+    fill(0);
+    text("ON", -86, 5);
+    
+  }
+  
+  if(!botaoDigLigado){
+    fill(cinzaClaro); 
+    ellipse(0, 5, 42, 23);
+    fill(0);
+    text("DIG", 0, 5);
+  }else{
+    fill(100,0,0);
+    ellipse(0, 5, 42, 23);
+    fill(0);
+    text("DIG", 0, 5);
+    
+  }
+  if(!botaoTextLigado){
+    fill(cinzaClaro); 
+    ellipse(86, 5, 42, 23);
+    fill(0);
+    text("TEXT", 87, 5);
+    
+  }else{
+    fill(0,0,255); 
+    ellipse(86, 5, 42, 23);
+    fill(0);
+    text("TEXT", 87, 5);
+    
+  }
+
   
   noStroke();
   fill(0, 30);
@@ -295,6 +409,41 @@ void desenhaTeclado() {
   
   popMatrix();
 }
+
+void desenhaLinhaTeclas(String[] teclas, float y, float x_inicio, float x_fim, float diametro) {
+  
+  int numTeclas = teclas.length;
+  
+  for (int i = 0; i < numTeclas; i++) {
+    float x = map(i, 0, numTeclas - 1, x_inicio, x_fim);
+
+    fill(cinzaClaro);
+    ellipse(x, y, diametro, diametro);
+
+    fill(0); 
+    text(teclas[i], x, y);
+  }
+}
+
+void keyPressed(){
+  
+  if(key == 'o' || key == 'O'){
+    botaoOnLigado = !botaoOnLigado;
+    if(somTecla != null){
+      somTecla.rewind();
+      somTecla.play();
+    }
+  }
+  
+  if(key == 'd' || key == 'D'){
+    botaoDigLigado = !botaoDigLigado;
+  }
+  
+  if(key == 't' || key == 'T'){
+    botaoTextLigado = !botaoTextLigado;
+  }
+}
+  
 
 void desenhaBracos() {
   pushMatrix();
