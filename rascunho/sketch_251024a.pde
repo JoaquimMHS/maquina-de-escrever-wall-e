@@ -82,11 +82,11 @@ void desenhaCorpo() {
   ellipse(40, 140, 10, 10);
   
   if (botaoOnLigado == true) {
-    desenhaBocaTriste();
+    desenhaBocaFeliz();
+    //desenhaBocaTriste();
   } else {
     desenhaBocaNeutra();
   }
-
 
   popMatrix();
 }
@@ -131,6 +131,29 @@ void desenhaBocaTriste() {
   popMatrix();
 }
 
+void desenhaBocaFeliz() {
+  pushMatrix();
+  stroke(0);
+  strokeWeight(1);
+  fill(cinzaEscuro);
+  rect(0, 12, 120, 60, 0);
+
+  //noStroke();
+  strokeWeight(2);
+  stroke(0,255,0);
+  fill(0);
+  rect(0, 25, 55, 5);
+
+  rect(32, 17, 5, 5);
+  rect(38, 10, 5, 5);
+  rect(44, 0, 5, 10);
+
+  rect(-32, 17, 5, 5);
+  rect(-38, 10, 5, 5);
+  rect(-44, 0, 5, 10);
+
+  popMatrix();
+}
 
 void desenhaEsteira(float x, float y) {
   pushMatrix();
