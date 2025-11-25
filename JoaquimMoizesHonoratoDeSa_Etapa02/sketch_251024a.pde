@@ -19,6 +19,7 @@ color cinzaEscuro = #272827;
 boolean botaoOnLigado = false;
 boolean botaoDigLigado = false;
 boolean botaoTextLigado = false;
+boolean botoesDigTeclado = false;
 
 void setup() {
   size(800, 800);
@@ -397,6 +398,13 @@ void desenhaBotoes() {
     fill(0);
     text("TEXT", 87, 8);
   }
+  
+  if(botoesDigTeclado){
+    stroke(0);
+    strokeWeight(2);
+    desenhaLinhaTeclas(linha2, y_linha2, x_inicio, x_fim, diametroTecla);
+  }
+    
 
   noStroke();
   fill(0, 30);
@@ -437,6 +445,12 @@ void keyPressed() {
   if (key == 't' || key == 'T') {
     botaoTextLigado = !botaoTextLigado;
   }
+  
+  
+  if(key == 'f' || key == 'F'){
+    botoesDigTeclado = !botoesDigTeclado;
+  }
+    
 }
 
 
