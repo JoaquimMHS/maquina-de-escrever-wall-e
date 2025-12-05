@@ -3,6 +3,19 @@
 import ddf.minim.*;
 Minim minim;
 AudioPlayer somTecla;
+AudioPlayer som1;
+AudioPlayer som2;
+AudioPlayer som3;
+AudioPlayer som4;
+AudioPlayer som5;
+AudioPlayer som6;
+AudioPlayer som7;
+AudioPlayer som8;
+AudioPlayer som9;
+AudioPlayer som0;
+AudioPlayer somTeclado;
+int tempoUltimaInteracao = -5000;
+int duracaoSorriso = 600;
 
 
 // --- Paleta de Cores ---
@@ -34,6 +47,17 @@ void setup() {
 
   minim = new Minim(this);
   somTecla = minim.loadFile("ligando_wallE.mp3");
+  som1 = minim.loadFile("1-one.mp3"); 
+  som2 = minim.loadFile("2-two.mp3");
+  som3 = minim.loadFile("3-three.mp3"); 
+  som4 = minim.loadFile("4-four.mp3");
+  som5 = minim.loadFile("5-five.mp3");
+  som6 = minim.loadFile("6-six.mp3"); 
+  som7 = minim.loadFile("7-seven.mp3");
+  som8 = minim.loadFile("8-eight.mp3");
+  som9 = minim.loadFile("9-nine.mp3");
+  som0 = minim.loadFile("0-zero.mp3");
+  somTeclado = minim.loadFile("somTeclado.mp3");
 }
 
 void draw() {
@@ -90,18 +114,30 @@ void desenhaCorpo() {
   if (botaoOnLigado == true) {
     
     String letrasDoTeclado = "FGHJKCVBNM"; 
+    String numerosDoTeclado = "0123456789";
     
-    boolean acionandoTexto = keyPressed && botaoTextLigado && 
-                             (letrasDoTeclado.indexOf(Character.toUpperCase(key)) != -1);
+    boolean apertouLetra = keyPressed && botaoTextLigado && 
+                          (letrasDoTeclado.indexOf(Character.toUpperCase(key)) != -1);
+    
+    boolean apertouNumero = botaoDigLigado && 
+                            (numerosDoTeclado.indexOf(key) != -1);
+    
+    boolean acaoTeclado = keyPressed && (apertouLetra || apertouNumero);
+    boolean acaoMouse = mouseEstaClicandoNoTexto() || mouseEstaClicandoNosNumeros();
+    
 
-    if (acionandoTexto) {
+    if (acaoTeclado || acaoMouse) {
+      tempoUltimaInteracao = millis(); 
+    }
+    
+    if (millis() - tempoUltimaInteracao < duracaoSorriso) {
       desenhaBocaFeliz(); 
     } else {
-      desenhaBocaTriste(); 
+      desenhaBocaTriste();
     }
     
   } else {
-    desenhaBocaNeutra(); 
+    desenhaBocaNeutra();
   }
 
   popMatrix();
@@ -581,6 +617,52 @@ void mousePressed() {
   }
 }
 
+boolean mouseEstaClicandoNoTexto() {
+  if (!mousePressed || !botaoTextLigado) {
+    return false;
+  }
+
+  float absBaseX = width/2;
+  float absBaseY = height/2 + 260;
+  float yLinhaText = -20; 
+  
+  for (int i = 0; i < linha2.length; i++) {
+    float xLocal = map(i, 0, linha2.length - 1, -135, 135);
+    float absX = absBaseX + xLocal;
+    float absY = absBaseY + yLinhaText;
+    
+    if (dist(mouseX, mouseY, absX, absY) < 25/2) {
+      return true; 
+    }
+  }
+  
+  return false;
+}
+
+void tocarSomNumerico(char k) {  
+  if (k == '1' && som1 != null) {
+    som1.rewind(); som1.play();
+  } else if (k == '2' && som2 != null) {
+    som2.rewind(); som2.play();
+  } else if (k == '3' && som3 != null) {
+    som3.rewind(); som3.play();
+  } else if (k == '4' && som4 != null) {
+    som4.rewind(); som4.play();
+  } else if (k == '5' && som5 != null) {
+    som5.rewind(); som5.play();
+  } else if (k == '6' && som6 != null) {
+    som6.rewind(); som6.play();
+  } else if (k == '7' && som7 != null) {
+    som7.rewind(); som7.play();
+  } else if (k == '8' && som8 != null) {
+    som8.rewind(); som8.play();
+  } else if (k == '9' && som9 != null) {
+    som9.rewind(); som9.play();
+  } else if (k == '0' && som0 != null) {
+    som0.rewind(); som0.play();
+  }
+}
+
 void processarEntrada(char k) {
   if (botaoOnLigado) {
     String letrasPermitidas = "fghjkcvbnmFGHJKCVBNM";
@@ -599,12 +681,17 @@ void processarEntrada(char k) {
       if (botaoTextLigado && letrasPermitidas.indexOf(k) != -1) {
          if (textoNoPapel.length() < CARACTERES_POR_LINHA * NUMERO_DE_LINHAS_MAXIMO) {
              textoNoPapel += k;
+             if (somTeclado != null) { 
+               somTeclado.rewind();
+               somTeclado.play(); 
+             }
          }
       }
 
       else if (botaoDigLigado && numerosPermitidos.indexOf(k) != -1) {
          if (textoNoPapel.length() < CARACTERES_POR_LINHA * NUMERO_DE_LINHAS_MAXIMO) {
              textoNoPapel += k;
+             tocarSomNumerico(k);
          }
       }
     }
@@ -635,4 +722,26 @@ void desenhaBracos() {
   quad(-80, 65, -80, 33, -115, 33, -115, 78);
 
   popMatrix();
+}
+
+boolean mouseEstaClicandoNosNumeros() {
+  if (!mousePressed || !botaoDigLigado) {
+    return false;
+  }
+
+  float absBaseX = width/2;
+  float absBaseY = height/2 + 260;
+  float yLinhaNum = -50;
+  
+  for (int i = 0; i < linha1.length; i++) {
+    float xLocal = map(i, 0, linha1.length - 1, -135, 135);
+    float absX = absBaseX + xLocal;
+    float absY = absBaseY + yLinhaNum;
+    
+    if (dist(mouseX, mouseY, absX, absY) < 25/2) {
+      return true; 
+    }
+  }
+  
+  return false;
 }
