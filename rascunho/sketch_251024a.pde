@@ -61,7 +61,8 @@ void setup() {
 }
 
 void draw() {
-  background(235, 227, 209);
+  desenhaChao();
+  
   translate(width/2, height/2); // Move a origem (0,0) para o centro
 
   // Rolo da Máquina e Papel (Mais ao fundo)
@@ -744,4 +745,23 @@ boolean mouseEstaClicandoNosNumeros() {
   }
   
   return false;
+}
+
+void desenhaChao() {
+  background(169, 204, 218);
+  
+  // 2. Inicia o isolamento das configurações
+  pushStyle(); // <--- SALVA O ESTADO ATUAL (que provavelmente é CENTER)
+  
+  // Agora podemos mudar as coisas sem medo de quebrar o robô
+  rectMode(CORNER); // Muda para CORNER só para este retângulo
+  noStroke();
+  fill(131,115,91); // Cor cinza escuro para o chão
+  
+  // Desenha o chão ocupando os últimos 150 pixels inferiores
+  // (x, y, largura, altura) a partir do canto superior esquerdo
+  rect(0, height - 150, width, 150); 
+  
+  // 3. Termina o isolamento
+  popStyle(); // <--- RESTAURA O ESTADO ANTERIOR (volta para CENTER automaticamente)
 }
